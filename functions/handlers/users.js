@@ -186,3 +186,26 @@ exports.uploadImage = (req, res) => {
     })
     busboy.end(req.rawBody)
 }
+
+exports.getFreelancers = (req, res) => {
+    db.collection('users')
+        .orderBy('createdAt', 'desc')
+        .get()
+        .then(data => {
+            let freelancers = []
+            data.forEach(doc => {
+                freelancers.push({
+                    userHandle: doc.data().userHandle,
+                    bio: doc.data().bio,
+                    category: doc.data().category,
+                    price: doc.data().price,
+                    email: doc.data().email,
+                })
+            })
+            return res.json(freelancers)
+        })
+        .catch(err => {
+            console.error(err)
+            res.status(500).json({ error: err.code })
+        })
+}
