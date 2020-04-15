@@ -10,7 +10,7 @@ const { signUp, logIn, addUserDetails, getUserDetails, uploadImage, getFreelance
 app.post('/signup', signUp)
 app.post('/login', logIn)
 app.post('/user', FBAuth, addUserDetails)
-app.get('/user/:handle', getUserDetails)
+app.get('/user',FBAuth, getUserDetails)
 app.post('/user/image', FBAuth, uploadImage)
 app.get('/freelancers', FBAuth, getFreelancers)
 

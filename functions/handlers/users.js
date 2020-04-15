@@ -17,7 +17,7 @@ exports.signUp = (req, res) => {
 
     if (!valid) return res.status(400).json(errors)
 
-    const noImg = 'no-img.png'
+    const noImg = 'no-img.jpg'
 
     let token, userId
     db.doc(`/users/${newUser.handle}`).get()
@@ -80,7 +80,7 @@ exports.logIn = (req, res) => {
             console.error(err)
             if (err.code === 'auth/wrong-password') {
                 return res.status(403).json({ general: 'Wrong credentials, please try again' })
-            } 
+            }
             else res.status(500).json({ error: err.json })
         })
 }
@@ -101,32 +101,27 @@ exports.addUserDetails = (req, res) => {
 
 
 exports.getUserDetails = (req, res) => {
+
     let userData = {}
-    db.doc(`/users/${req.params.handle}`)
-        .get()
-        .then((doc) => {
+
+    db.doc(`/users/${req.user.handle}`).get()
+        .then(doc => {
             if (doc.exists) {
-                userData.user = doc.data()
-                return db
-                    .collection('users')
-                    .where('userHandle', '==', req.params.handle)
-                    .orderBy('createdAt', 'desc')
-                    .get();
-            } else {
-                return res.status(404).json({ errror: 'User not found' })
+                userData.credentials = doc.data()
+                return db.collection('users').where('userHandle', '==', req.user.handle).get()
             }
         })
-        .then((data) => {
-            userData.reviews = [];
-            data.forEach((doc) => {
-                userData.tweets.push({
+        .then(data => {
+            userData.reviews = []
+            data.forEach(doc => {
+                userData.reviews.push({
                     userHandle: doc.data().userHandle,
                     bio: doc.data().bio,
                     category: doc.data().category,
                     price: doc.data().price,
                     email: doc.data().email,
-                });
-            });
+                })
+            })
             return res.json(userData)
         })
         .catch((err) => {
@@ -195,11 +190,13 @@ exports.getFreelancers = (req, res) => {
             let freelancers = []
             data.forEach(doc => {
                 freelancers.push({
-                    userHandle: doc.data().userHandle,
+                    userId: doc.data().userId,
+                    userHandle: doc.data().handle,
                     bio: doc.data().bio,
                     category: doc.data().category,
                     price: doc.data().price,
                     email: doc.data().email,
+                    profileImage: doc.data().imageUrl
                 })
             })
             return res.json(freelancers)
