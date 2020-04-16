@@ -99,29 +99,31 @@ exports.addUserDetails = (req, res) => {
         })
 }
 
-
 exports.getUserDetails = (req, res) => {
-
     let userData = {}
-
-    db.doc(`/users/${req.user.handle}`).get()
-        .then(doc => {
+    db.doc(`/users/${req.user.handle}`)
+        .get()
+        .then((doc) => {
             if (doc.exists) {
-                userData.credentials = doc.data()
-                return db.collection('users').where('userHandle', '==', req.user.handle).get()
+                userData.user = doc.data()
+                return db.collection('likes').where('userHandle', '==', req.user.handle).get()
+            } else {
+                return res.status(404).json({ errror: 'User not found' })
             }
         })
-        .then(data => {
-            userData.reviews = []
-            data.forEach(doc => {
+        .then((data) => {
+            userData.reviews = [];
+            data.forEach((doc) => {
                 userData.reviews.push({
-                    userHandle: doc.data().userHandle,
+                    userId: doc.data().userId,
+                    handle: doc.data().handle,
                     bio: doc.data().bio,
                     category: doc.data().category,
                     price: doc.data().price,
                     email: doc.data().email,
-                })
-            })
+                    profileImage: doc.data().imageUrl
+                });
+            });
             return res.json(userData)
         })
         .catch((err) => {
@@ -191,7 +193,7 @@ exports.getFreelancers = (req, res) => {
             data.forEach(doc => {
                 freelancers.push({
                     userId: doc.data().userId,
-                    userHandle: doc.data().handle,
+                    handle: doc.data().handle,
                     bio: doc.data().bio,
                     category: doc.data().category,
                     price: doc.data().price,
