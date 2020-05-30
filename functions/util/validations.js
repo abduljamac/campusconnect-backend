@@ -43,10 +43,10 @@ exports.validateLoginData = (data) => {
 exports.reduceUserDetails = (data) => {
     let userDetails = {};
 
-    if (!isEmpty(data.uni.trim())) userDetails.uni = data.uni;
     if (!isEmpty(data.bio.trim())) userDetails.bio = data.bio;
     if (!isEmpty(data.category.trim())) userDetails.category = data.category;
     if (!isEmpty(data.price.trim())) userDetails.price = data.price;
+    if (!isEmpty(data.number)) userDetails.number = data.number;
 
     return userDetails;
 }

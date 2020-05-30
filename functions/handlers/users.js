@@ -10,7 +10,8 @@ exports.signUp = (req, res) => {
         email: req.body.email,
         password: req.body.password,
         confirmPassword: req.body.confirmPassword,
-        handle: req.body.handle
+        handle: req.body.handle,
+        uni: req.body.uni
     }
 
     const { valid, errors } = validateSignUpData(newUser)
@@ -58,7 +59,6 @@ exports.signUp = (req, res) => {
         })
 }
 
-
 exports.logIn = (req, res) => {
     const user = {
         email: req.body.email,
@@ -85,7 +85,7 @@ exports.logIn = (req, res) => {
         })
 }
 
-exports.addUserDetails = (req, res) => {
+exports.updateUserDetails = (req, res) => {
     let userDetails = reduceUserDetails(req.body)
 
     db.doc(`/users/${req.user.handle}`)
@@ -121,7 +121,8 @@ exports.getUserDetails = (req, res) => {
                     category: doc.data().category,
                     price: doc.data().price,
                     email: doc.data().email,
-                    profileImage: doc.data().imageUrl
+                    profileImage: doc.data().imageUrl,
+                    reviewCount: doc.data().reviewCount
                 });
             });
             return res.json(userData)
@@ -131,7 +132,6 @@ exports.getUserDetails = (req, res) => {
             return res.status(500).json({ error: err.code })
         })
 }
-
 
 exports.uploadImage = (req, res) => {
     const BusBoy = require('busboy')
@@ -198,7 +198,8 @@ exports.getFreelancers = (req, res) => {
                     category: doc.data().category,
                     price: doc.data().price,
                     email: doc.data().email,
-                    profileImage: doc.data().imageUrl
+                    profileImage: doc.data().imageUrl,
+                    commentCount: doc.data().commentCount
                 })
             })
             return res.json(freelancers)
