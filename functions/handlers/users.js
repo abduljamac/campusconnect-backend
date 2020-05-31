@@ -40,6 +40,7 @@ exports.signUp = (req, res) => {
             const userCredentials = {
                 handle: newUser.handle,
                 email: newUser.email,
+                uni: newUser.uni,
                 createdAt: new Date().toISOString(),
                 imageUrl: `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${noImg}?alt=media`,
                 userId
@@ -106,24 +107,13 @@ exports.getUserDetails = (req, res) => {
         .then((doc) => {
             if (doc.exists) {
                 userData.user = doc.data()
-                return db.collection('likes').where('userHandle', '==', req.user.handle).get()
-            } else {
-                return res.status(404).json({ errror: 'User not found' })
-            }
+                return db.collection('reviews').where('userHandle', '==', req.user.handle).get()
+            } 
         })
         .then((data) => {
             userData.reviews = []
             data.forEach((doc) => {
-                userData.reviews.push({
-                    userId: doc.data().userId,
-                    handle: doc.data().handle,
-                    bio: doc.data().bio,
-                    category: doc.data().category,
-                    price: doc.data().price,
-                    email: doc.data().email,
-                    profileImage: doc.data().imageUrl,
-                    reviewCount: doc.data().reviewCount
-                })
+                userData.reviews.push(doc.data())
             })
             return res.json(userData)
         })
@@ -184,7 +174,7 @@ exports.uploadImage = (req, res) => {
     busboy.end(req.rawBody)
 }
 
-exports.getFreelancers = (req, res) => {
+exports.getAllUsers = (req, res) => {
     db.collection('users')
         .orderBy('createdAt', 'desc')
         .get()

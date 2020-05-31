@@ -26,16 +26,28 @@ exports.uploadReview = (req, res) => {
             res.status(500).json({ error: `Error creating the review` })
             console.error(err)
         })
-
-
 }
 
-exports.getReview = (req, res) => {
-
+exports.getReviews = (req, res) => {
+    db.collection('reviews')
+        .orderBy('createdAt', 'desc')
+        .get()
+        .then(data => {
+            let reviews = []
+            data.forEach(doc => {
+                reviews.push({
+                    body: doc.data().body,
+                    createdAt: doc.data().createdAt,
+                    freelancerId: doc.data().freelancerId,
+                    userHandle: doc.data().userHandle,
+                    userImage: doc.data().userImage
+                })
+            })
+            return res.json(reviews)
+        })
+        .catch(err => {
+            console.error(err)
+            res.status(500).json({ error: err.code })
+        })
 }
-
-exports.deleteReview = (req, res) => {
-
-}
-
 
