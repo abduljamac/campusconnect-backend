@@ -9,7 +9,7 @@ My final year project for [BSc Computer Science (Software Engineering) ](https:/
 - Node
 - Express
 
-### Campusconnect App;
+### Campusconnect App:
 ```
 https://github.com/abduljamac/campusconnect
 ```

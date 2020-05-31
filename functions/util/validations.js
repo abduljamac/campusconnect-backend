@@ -5,7 +5,7 @@ const isEmail = (email) => {
 }
 
 const isEmpty = (string) => {
-    if (string.trim() === '') return true;
+    if (string.trim() === '') return true
     else return false
 }
 
@@ -41,12 +41,12 @@ exports.validateLoginData = (data) => {
 }
 
 exports.reduceUserDetails = (data) => {
-    let userDetails = {};
+    let userDetails = {}
 
-    if (!isEmpty(data.bio.trim())) userDetails.bio = data.bio;
-    if (!isEmpty(data.category.trim())) userDetails.category = data.category;
-    if (!isEmpty(data.price.trim())) userDetails.price = data.price;
-    if (!isEmpty(data.number)) userDetails.number = data.number;
+    if (!isEmpty(data.bio.trim())) userDetails.bio = data.bio
+    if (!isEmpty(data.category.trim())) userDetails.category = data.category
+    if (!isEmpty(data.price.trim())) userDetails.price = data.price
+    if (!isEmpty(data.number)) userDetails.number = data.number
 
-    return userDetails;
+    return userDetails
 }

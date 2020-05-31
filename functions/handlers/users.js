@@ -112,7 +112,7 @@ exports.getUserDetails = (req, res) => {
             }
         })
         .then((data) => {
-            userData.reviews = [];
+            userData.reviews = []
             data.forEach((doc) => {
                 userData.reviews.push({
                     userId: doc.data().userId,
@@ -123,8 +123,8 @@ exports.getUserDetails = (req, res) => {
                     email: doc.data().email,
                     profileImage: doc.data().imageUrl,
                     reviewCount: doc.data().reviewCount
-                });
-            });
+                })
+            })
             return res.json(userData)
         })
         .catch((err) => {
@@ -198,6 +198,7 @@ exports.getFreelancers = (req, res) => {
                     category: doc.data().category,
                     price: doc.data().price,
                     email: doc.data().email,
+                    number: doc.data().number,
                     profileImage: doc.data().imageUrl,
                     commentCount: doc.data().commentCount
                 })
