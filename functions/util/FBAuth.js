@@ -7,14 +7,14 @@ module.exports = (req, res, next) => {
         userToken = req.headers.authorization.split('User ')[1]
 
     } else {
-        console.log('User token not found')
+        // console.log('User token not found')
         return res.status(402).json ({ error:'Unauthorized'})
     }
 
     admin.auth().verifyIdToken(userToken)
         .then( decodedToken => {
             req.user = decodedToken
-            console.log('Decoded Token', decodedToken)
+            // console.log('Decoded Token', decodedToken)
             return db.collection('users')
                 .where('userId', '==', req.user.uid)
                 .limit(1)
