@@ -13,6 +13,7 @@ app.post('/user/image', FBAuth, uploadImage)
 app.get('/users', FBAuth, getAllUsers)
 app.post('/review/:userId', FBAuth, uploadReview)
 app.get('/reviews', FBAuth, getReviews)
+app.get('/reviews/users', FBAuth, getReviews)
 app.delete('/reviews/:reviewId', FBAuth, deleteReview)
 // app.post('/gallary', FBAuth, uploadGallaryImage )
 

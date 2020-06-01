@@ -20,7 +20,7 @@ exports.signUp = (req, res) => {
 
     const noImg = 'no-img.jpg'
 
-    let token, userId
+    let token, userId, uni
     db.doc(`/users/${newUser.handle}`).get()
         .then(doc => {
             if (doc.exists) {
@@ -33,6 +33,7 @@ exports.signUp = (req, res) => {
         })
         .then(data => {
             userId = data.user.uid
+            uni = req.body.uni
             return data.user.getIdToken()
         })
         .then(idToken => {
@@ -42,6 +43,7 @@ exports.signUp = (req, res) => {
                 email: newUser.email,
                 createdAt: new Date().toISOString(),
                 imageUrl: `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${noImg}?alt=media`,
+                uni,
                 userId
             }
             return db.doc(`/users/${newUser.handle}`).set(userCredentials)
@@ -195,7 +197,7 @@ exports.getAllUsers = (req, res) => {
             return res.json(freelancers)
         })
         .catch(err => {
-            console.error(err)
+            // console.error(err)
             res.status(500).json({ error: err.code })
         })
 }
