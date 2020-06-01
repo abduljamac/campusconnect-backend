@@ -189,7 +189,7 @@ exports.getAllUsers = (req, res) => {
                     email: doc.data().email,
                     number: doc.data().number,
                     profileImage: doc.data().imageUrl,
-                    commentCount: doc.data().commentCount
+                    uni: doc.data().uni
                 })
             })
             return res.json(freelancers)
@@ -200,58 +200,3 @@ exports.getAllUsers = (req, res) => {
         })
 }
 
-exports.uploadGallaryImage = (req, res) => {
-    const BusBoy = require('busboy')
-    const path = require('path')
-    const os = require('os')
-    const fs = require('fs')
-
-    const busboy = new BusBoy({ headers: req.headers })
-
-    let imageToBeUploaded = {}
-    let imageFileName
-    let postImage = {
-        createdAt: new Date().toISOString(),
-        userId: req.user.userId,
-        userHandle: req.user.handle,
-    }
-
-    let bucket = admin.storage().bucket();
-    let db = admin.firestore();
-
-    let storageFilepath;
-    let storageFile;
-
-    // Note: Currently only the last file is saved to `/users/${req.user.handle}`
-    busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
-        // console.log(fieldname, file, filename, encoding, mimetype)
-        if (mimetype !== 'image/jpeg' && mimetype !== 'image/png') {
-            return res.status(400).json({ error: 'Wrong file type submitted' })
-        }
-        // my.image.png => ['my', 'image', 'png']
-        const imageExtension = filename.split('.')[filename.split('.').length - 1]
-        // 32756238461724837.png
-        imageFileName = `${Math.round(Math.random() * 1000000000000).toString()}.${imageExtension}`
-        const filepath = path.join(os.tmpdir(), imageFileName)
-        imageToBeUploaded = { filepath, mimetype }
-        file.pipe(fs.createWriteStream(filepath))
-    })
-        .on('finish', () => {
-            const imageUrl = `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${imageFileName}?alt=media`
-            postImage.imageUrl = imageUrl
-            db.collection('gallary').add(postImage)
-                .then(() => {
-                    res.status(201).json({ message: 'Image uploaded successfully' }); // 201 CREATED
-                })
-                .catch((err) => {
-                    console.error(err);
-                    res.status(500).json({ error: err.code }); // 500 INTERNAL_SERVER_ERROR
-                });
-        })
-        .on('error', (err) => {
-            console.error(err);
-            res.status(500).json({ error: err.code });
-        });
-
-    req.pipe(busboy);
-}

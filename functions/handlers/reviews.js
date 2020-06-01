@@ -14,17 +14,20 @@ exports.uploadReview = (req, res) => {
 
     db.doc(`/users/${req.params.userId}`)
         .get()
-        .then(doc => {
-            const resReview = newReview
-            resReview.reviewId = doc.id
-            res.json(resReview)
-        })
         .then(() => {
             return db.collection('reviews').add(newReview)
         })
+        .then( docRef => {
+            return db.collection('reviews').doc(`${docRef.id}`).update({
+                reviewId: docRef.id
+            })
+        })
+        .then(() => {
+            res.json(newReview)
+        })
         .catch(err => {
             res.status(500).json({ error: `Error creating the review` })
-            console.error(err)
+            // console.error(err)
         })
 }
 
@@ -40,14 +43,38 @@ exports.getReviews = (req, res) => {
                     createdAt: doc.data().createdAt,
                     freelancerId: doc.data().freelancerId,
                     userHandle: doc.data().userHandle,
-                    userImage: doc.data().userImage
+                    userImage: doc.data().userImage,
+                    reviewId: doc.data().reviewId
                 })
             })
             return res.json(reviews)
         })
         .catch(err => {
-            console.error(err)
+            // console.error(err)
             res.status(500).json({ error: err.code })
         })
 }
 
+exports.deleteReview = (req, res) => {
+    const document = db.doc(`/reviews/${req.params.reviewId}`)
+    document
+        .get()
+        .then(doc => {
+            console.log(doc)
+            if (!doc.exists) {
+                return res.status(404).json({ error: 'Review not found' })
+            }
+            if (doc.data().userHandle !== req.user.handle) {
+                return res.status(403).json({ error: 'Unauthorized' })
+            } else {
+                return document.delete()
+            }
+        })
+        .then(() => {
+            res.json({ message: 'Review deleted successfully' })
+        })
+        .catch(err => {
+            // console.error(err)
+            return res.status(500).json({ error: err.code })
+        })
+}
